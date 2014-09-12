@@ -1,6 +1,7 @@
 (ns callme.core
   (:require [clojure.string :as s]
-            [clj-time.format :as f]))
+            [clj-time.format :as f]
+            [clj-time.core :as t]))
 
 (def date-formater (f/formatter "yyyy/MM/dd"))
 
@@ -15,3 +16,9 @@
 
 (defn chunk-it [string]
   (map parse-chunk (split-on-empty-line string)))
+
+(defn is-overdue [today chunk]
+  (t/before? (t/plus (:date chunk) (t/days (:interval chunk))) today))
+
+(defn overdue [chunks today]
+  (filter (partial is-overdue today) chunks))
